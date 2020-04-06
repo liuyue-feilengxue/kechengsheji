@@ -13,7 +13,7 @@ public class PeopleTable {
 	private String workplace = new String();  //工作地
 	private String homeaddres = new String();  //家庭地址
 	private String postcode = new String();  //邮编
-	private String[] group = new String[10000];  //所属组
+	private String[] group = new String[10000];  //所属组，至少要有一个
 	private String note = new String();  //备注
 	private String photopath = new String();  //照片的地址
 	private String filename = new String();
