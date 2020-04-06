@@ -1,23 +1,21 @@
 package address_book;
 
-
 //姓名、电话、手机、电子邮箱、
 //生日、相片、工作单位 、家庭地址、邮编、所属组、备注 
 //所属组不能超过10000个
-//用list方法来存东西
 
 public class PeopleTable {
 	private String name = new String();  //姓名
 	private String telephone = new String();  //电话
 	private String phone= new String();  //手机
 	private String email = new String();  //电子邮箱
-	private String birthday = new String();  //生日
-	private String photo = new String();  //照片 变成base64存储
+	private String birthday = new String();  //生日 
 	private String workplace = new String();  //工作地
 	private String homeaddres = new String();  //家庭地址
 	private String postcode = new String();  //邮编
 	private String[] group = new String[10000];  //所属组
 	private String note = new String();  //备注
+	private String photopath = new String();  //照片的地址
 	private String filename = new String();
 	
 	public PeopleTable() {
@@ -25,6 +23,14 @@ public class PeopleTable {
 		
 	public String getTelephone() {
 		return telephone;
+	}
+
+	public String getPhotopath() {
+		return photopath;
+	}
+
+	public void setPhotopath(String photopath) {
+		this.photopath = photopath;
 	}
 
 	public void setTelephone(String telephone) {
@@ -53,14 +59,6 @@ public class PeopleTable {
 
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
-	}
-
-	public String getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
 	}
 
 	public String getWorkplace() {
