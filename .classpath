@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_231"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="E:/eclipse2019/eclipse2019_downcc.com/path/csv第三方包/javacsv.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
