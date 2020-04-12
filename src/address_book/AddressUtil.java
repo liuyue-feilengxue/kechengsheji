@@ -1,6 +1,8 @@
 package address_book;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.*;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+
 
 public class AddressUtil {
 	// 联系人数组
@@ -91,11 +94,13 @@ public class AddressUtil {
 		}
 	}
 
-	// txt导入操作（未完成）
+	// txt导入操作
 	public void txtread() {
 		JFileChooser fd = new JFileChooser();
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new FileFilter() {
+
+			@Override
 			public String getDescription() {
 				// TODO Auto-generated method stub
 				return ".txt";
@@ -109,31 +114,108 @@ public class AddressUtil {
 				} else {
 					return false;
 				}
+
 			}
 		});
 		fd.showOpenDialog(null);
 		File f = fd.getSelectedFile();
-		
+		try {
+			FileReader reader = new FileReader(f);
+			BufferedReader bf = new BufferedReader(reader);
+			String str;
+			while ((str = bf.readLine()) != null) {
+				if (null != str || !str.trim().equals("")) {
+					PeopleTable pttemp = new PeopleTable();
+					// 返回值不是-1代表有
+					if (str.indexOf("name:") == 0) {
+						String name = str.replace("name:", "");
+						pttemp.setName(name);
+						str = bf.readLine();
+					}
+					if (str.indexOf("telephone:")==0) {
+						String telephone = str.replace("telephone:", "");
+						pttemp.setTelephone(telephone);
+						str =bf.readLine();
+					}
+					if (str.indexOf("phone:")==0) {
+						String phone = str.replace("phone:", "");
+						pttemp.setPhone(phone);
+						str=bf.readLine();
+					}
+					if(str.indexOf("email:")==0) {
+						String email = str.replace("email:", "");
+						pttemp.setEmail(email);
+						str = bf.readLine();
+					}
+					if(str.indexOf("birthday:")==0) {
+						String birthday = str.replace("birthday:", "");
+						pttemp.setBirthday(birthday);
+						str = bf.readLine();
+					}
+					if(str.indexOf("photopath:")==0) {
+						String photopath = str.replace("photopath:", "");
+						pttemp.setPhotopath(photopath);
+						str = bf.readLine();
+					}
+					if(str.indexOf("workplace:")==0) {
+						String workplace = str.replace("workplace:", "");
+						pttemp.setWorkplace(workplace);;
+						str = bf.readLine();
+					}
+					if(str.indexOf("homeaddress:")==0) {
+						String homeaddress = str.replace("homeaddress:", "");
+						pttemp.setHomeaddres(homeaddress);
+						str = bf.readLine();
+					}
+					if (str.indexOf("postcode:")==0) {
+						String postcode = str.replace("postcode:", "");
+						pttemp.setPostcode(postcode);
+						str = bf.readLine();
+					}
+					if (str.indexOf("group:")==0) {
+						String tempstr = str.replace("group:", "");
+						String[] group = new String[100];
+						if (tempstr != "") {
+							tempstr = tempstr.substring(1, tempstr.length() - 1);
+							group = tempstr.split(",");
+						} else {
+							group = null;
+						}
+						pttemp.setGroup(group);
+						str = bf.readLine();
+					}
+					if (str.indexOf("note:")==0) {
+						String note = str.replace("note:", "");
+						pttemp.setNote(note);
+					}
+					pt.add(pttemp);
+				}
+			}
+			// 关闭流
+			bf.close();
+			reader.close();
+			System.out.println("导入成功");
+		} catch (Exception e) {
+			System.out.println("导入失败");
+		}
 	}
 
-	// csv导出操作（未测试）
+	// csv导出操作
 	public void csvwrite() {
+		JFileChooser jf = new JFileChooser();
+//		jf.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);
+		jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jf.showDialog(null, null);
+		File fi = jf.getSelectedFile();
+		String f = fi.getAbsolutePath() + "\\通讯录.csv";
 		try {
-			CsvFileFilterTest fileFilter = new CsvFileFilterTest(); // 创建过滤器对象
-			JFileChooser fd = new JFileChooser();
-			fd.setFileFilter(fileFilter);// 创建一个csv的文件过滤器
-			fd.showOpenDialog(null);
-			String filePath = fd.getSelectedFile().getAbsolutePath(); // 获得文件路径
-			String filename = fd.getSelectedFile().getName(); // 获得文件名
-			CsvWriter csvWriter = new CsvWriter(filePath, ',', Charset.forName("GBK"));
-			// 姓名、电话、手机、电子邮箱、
-			// 生日、相片、工作单位 、家庭地址、邮编、所属组、备注
+			//E:\eclipse2019\eclipse2019_downcc.com\path\javafx
+			System.out.println(f);
+			CsvWriter csvWriter = new CsvWriter(f, ',', Charset.forName("GBK"));
 			String[] headers = { "姓名", "电话", "手机", "电子邮箱", "生日", "相片", "工作单位", "家庭地址", "邮编", "所属组", "备注" };
-
 			csvWriter.writeRecord(headers);
 			// 写到csv里面
-
-			String[][] data = new String[pt.size()][];
+			String[][] data = new String[pt.size()][11];
 			int i = 0;
 			for (PeopleTable pttemp : pt) {
 				data[i][0] = pttemp.getName();
@@ -146,18 +228,29 @@ public class AddressUtil {
 				data[i][7] = pttemp.getHomeaddres();
 				data[i][8] = pttemp.getPostcode();
 				// 把它变成[数据,数据,数据]的string，再存入
+				
 				String[] grouptemp = pttemp.getGroup();
-				String group = grouptemp.toString();
+				String group = new String();
+				group = "[";
+				for (int temp=0;temp<grouptemp.length;temp++) {
+					if (temp ==0) {
+						group = group + grouptemp[temp];
+					}
+					else {
+						group = group + ","+grouptemp[temp];
+					}
+				}
+				group = group +"]";
 				data[i][9] = group;
 				data[i][10] = pttemp.getNote();
+				
 				i++;
 			}
-
-			for (int j = 0; i < data.length; i++) {
+			for (int j = 0; j < data.length; j++) {
 				csvWriter.writeRecord(data[j]);
 			}
 			csvWriter.close();
-
+			System.out.println("导出成功");
 		} catch (Exception e) {
 			System.out.println("导出失败");
 		}
