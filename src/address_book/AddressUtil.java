@@ -27,9 +27,7 @@ import ezvcard.property.FormattedName;
 import ezvcard.property.Telephone;
 import net.sourceforge.cardme.io.CompatibilityMode;
 import net.sourceforge.cardme.io.VCardWriter;
-import net.sourceforge.cardme.util.Util;
 import net.sourceforge.cardme.vcard.VCardImpl;
-import net.sourceforge.cardme.vcard.arch.EncodingType;
 import net.sourceforge.cardme.vcard.arch.ParameterTypeStyle;
 import net.sourceforge.cardme.vcard.arch.VCardVersion;
 import net.sourceforge.cardme.vcard.types.AdrType;
@@ -38,20 +36,17 @@ import net.sourceforge.cardme.vcard.types.EmailType;
 import net.sourceforge.cardme.vcard.types.ExtendedType;
 import net.sourceforge.cardme.vcard.types.FNType;
 import net.sourceforge.cardme.vcard.types.NoteType;
-import net.sourceforge.cardme.vcard.types.PhotoType;
 import net.sourceforge.cardme.vcard.types.TelType;
-import net.sourceforge.cardme.vcard.types.media.ImageMediaType;
 import net.sourceforge.cardme.vcard.types.params.AdrParamType;
 import net.sourceforge.cardme.vcard.types.params.TelParamType;
+
 
 public class AddressUtil {
 	// 联系人数组
 	List<PeopleTable> pt = new ArrayList<PeopleTable>();
-	List<GroupTable> gt = new ArrayList<GroupTable>();
 
 	/**
 	 * 增加联系人
-	 * 
 	 * @param e
 	 * @return
 	 */
@@ -59,16 +54,16 @@ public class AddressUtil {
 		return pt.add(e);
 	}
 
-	/**
-	 * 删除联系人
-	 * 
-	 * @param e
-	 * @return
-	 */
+	 /**
+	  * 删除联系人
+	  * @param e
+	  * @return
+	  */
 	public boolean removeContactPerson(PeopleTable e) {
 		int length = pt.size();
 		for (int i = length - 1; i >= 0; i--) {
 			PeopleTable tem = pt.get(i);
+			
 			if (e.equals(tem)) {
 				pt.remove(tem);
 				return true;
@@ -77,13 +72,12 @@ public class AddressUtil {
 		return false;
 	}
 
-	/**
-	 * 修改联系人
-	 * 
-	 * @param index
-	 * @param e
-	 * @return
-	 */
+	 /**
+	  * 修改联系人
+	  * @param index
+	  * @param e
+	  * @return
+	  */
 	public boolean changeContactPerson(int index, PeopleTable e) {
 		if (index <= pt.size() && index >= 0) {
 			pt.set(index, e);
@@ -91,11 +85,6 @@ public class AddressUtil {
 		} else {
 			return false;
 		}
-	}
-
-	// 查询联系人（未完成）
-	public boolean checkContactPerson() {
-		return true;
 	}
 
 	/**
@@ -109,32 +98,33 @@ public class AddressUtil {
 		String f = fi.getAbsolutePath() + "\\通讯录.txt";
 		try {
 			FileWriter out = new FileWriter(f);
-//				String[][] data = new String[pt.size()][];
-//				int i = 0;
+//			String[][] data = new String[pt.size()][];
+//			int i = 0;
 			for (PeopleTable pttemp : pt) {
-				out.write("name:" + pttemp.getName() + "\n");
-				out.write("telephone:" + pttemp.getTelephone() + "\n");
-				out.write("phone:" + pttemp.getPhone() + "\n");
-				out.write("email:" + pttemp.getEmail() + "\n");
-				out.write("birthday:" + pttemp.getBirthday() + "\n");
-				out.write("photopath:" + pttemp.getPhotopath() + "\n");
-				out.write("workplace:" + pttemp.getWorkplace() + "\n");
-				out.write("homeaddress:" + pttemp.getHomeaddres() + "\n");
-				out.write("postcode:" + pttemp.getPostcode() + "\n");
+				out.write("name:" + pttemp.getName()+"\n");
+				out.write("telephone:"+pttemp.getTelephone()+"\n");
+				out.write("phone:"+pttemp.getPhone()+"\n");
+				out.write("email:"+pttemp.getEmail()+"\n");
+				out.write("birthday:"+pttemp.getBirthday()+"\n");
+				out.write("photopath:"+pttemp.getPhotopath()+"\n");
+				out.write("workplace:"+pttemp.getWorkplace()+"\n");
+				out.write("homeaddress:"+pttemp.getHomeaddres()+"\n");
+				out.write("postcode:"+pttemp.getPostcode()+"\n");
 				// 把它变成[数据,数据,数据]的string，再存入
 				String[] grouptemp = pttemp.getGroup();
 				String group = new String();
 				group = "[";
-				for (int temp = 0; temp < grouptemp.length; temp++) {
-					if (temp == 0) {
+				for (int temp=0;temp<grouptemp.length;temp++) {
+					if (temp ==0) {
 						group = group + grouptemp[temp];
-					} else {
-						group = group + "," + grouptemp[temp];
+					}
+					else {
+						group = group + ","+grouptemp[temp];
 					}
 				}
-				group = group + "]";
-				out.write("group:" + group + "\n");
-				out.write("note:" + pttemp.getNote() + "\n");
+				group = group +"]";
+				out.write("group:"+group+"\n");
+				out.write("note:"+pttemp.getNote()+"\n");
 			}
 			out.close();
 			System.out.println("txt导出成功");
@@ -150,6 +140,8 @@ public class AddressUtil {
 		JFileChooser fd = new JFileChooser();
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new FileFilter() {
+
+			@Override
 			public String getDescription() {
 				// TODO Auto-generated method stub
 				return ".txt";
@@ -163,33 +155,110 @@ public class AddressUtil {
 				} else {
 					return false;
 				}
+
 			}
 		});
 		fd.showOpenDialog(null);
 		File f = fd.getSelectedFile();
-
+		try {
+			FileReader reader = new FileReader(f);
+			BufferedReader bf = new BufferedReader(reader);
+			String str;
+			while ((str = bf.readLine()) != null) {
+				if (null != str || !str.trim().equals("")) {
+					PeopleTable pttemp = new PeopleTable();
+					// 返回值不是-1代表有
+					if (str.indexOf("name:") == 0) {
+						String name = str.replace("name:", "");
+						pttemp.setName(name);
+						str = bf.readLine();
+					}
+					if (str.indexOf("telephone:")==0) {
+						String telephone = str.replace("telephone:", "");
+						pttemp.setTelephone(telephone);
+						str =bf.readLine();
+					}
+					if (str.indexOf("phone:")==0) {
+						String phone = str.replace("phone:", "");
+						pttemp.setPhone(phone);
+						str=bf.readLine();
+					}
+					if(str.indexOf("email:")==0) {
+						String email = str.replace("email:", "");
+						pttemp.setEmail(email);
+						str = bf.readLine();
+					}
+					if(str.indexOf("birthday:")==0) {
+						String birthday = str.replace("birthday:", "");
+						pttemp.setBirthday(birthday);
+						str = bf.readLine();
+					}
+					if(str.indexOf("photopath:")==0) {
+						String photopath = str.replace("photopath:", "");
+						pttemp.setPhotopath(photopath);
+						str = bf.readLine();
+					}
+					if(str.indexOf("workplace:")==0) {
+						String workplace = str.replace("workplace:", "");
+						pttemp.setWorkplace(workplace);;
+						str = bf.readLine();
+					}
+					if(str.indexOf("homeaddress:")==0) {
+						String homeaddress = str.replace("homeaddress:", "");
+						pttemp.setHomeaddres(homeaddress);
+						str = bf.readLine();
+					}
+					if (str.indexOf("postcode:")==0) {
+						String postcode = str.replace("postcode:", "");
+						pttemp.setPostcode(postcode);
+						str = bf.readLine();
+					}
+					if (str.indexOf("group:")==0) {
+						String tempstr = str.replace("group:", "");
+						String[] group = new String[100];
+						if (tempstr != "") {
+							tempstr = tempstr.substring(1, tempstr.length() - 1);
+							group = tempstr.split(",");
+						} else {
+							group = null;
+						}
+						pttemp.setGroup(group);
+						str = bf.readLine();
+					}
+					if (str.indexOf("note:")==0) {
+						String note = str.replace("note:", "");
+						pttemp.setNote(note);
+					}
+					pt.add(pttemp);
+				}
+			}
+			// 关闭流
+			bf.close();
+			reader.close();
+			System.out.println("导入成功");
+		} catch (Exception e) {
+			System.out.println("导入失败");
+		}
 	}
 
 	/**
 	 * csv导出操作
 	 */
 	public void csvwrite() {
+		JFileChooser jf = new JFileChooser();
+//		jf.setFileSelectionMode(JFileChooser.SAVE_DIALOG | JFileChooser.DIRECTORIES_ONLY);
+		jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jf.showDialog(null, null);
+		File fi = jf.getSelectedFile();
+		String f = fi.getAbsolutePath() + "\\通讯录.csv";
 		try {
-			CsvFileFilterTest fileFilter = new CsvFileFilterTest(); // 创建过滤器对象
-			JFileChooser fd = new JFileChooser();
-			fd.setFileFilter(fileFilter);// 创建一个csv的文件过滤器
-			fd.showOpenDialog(null);
-			String filePath = fd.getSelectedFile().getAbsolutePath(); // 获得文件路径
-			String filename = fd.getSelectedFile().getName(); // 获得文件名
-			CsvWriter csvWriter = new CsvWriter(filePath, ',', Charset.forName("GBK"));
-			// 姓名、电话、手机、电子邮箱、
-			// 生日、相片、工作单位 、家庭地址、邮编、所属组、备注
+			//E:\eclipse2019\eclipse2019_downcc.com\path\javafx
+			System.out.println(f);
+			CsvWriter csvWriter = new CsvWriter(f, ',', Charset.forName("GBK"));
 			String[] headers = { "姓名", "电话", "手机", "电子邮箱", "生日", "相片", "工作单位", "家庭地址", "邮编", "所属组", "备注" };
-
 			csvWriter.writeRecord(headers);
 			// 写到csv里面
-
-			String[][] data = new String[pt.size()][];
+			String[][] data = new String[pt.size()][11];
 			int i = 0;
 			for (PeopleTable pttemp : pt) {
 				data[i][0] = pttemp.getName();
@@ -202,26 +271,37 @@ public class AddressUtil {
 				data[i][7] = pttemp.getHomeaddres();
 				data[i][8] = pttemp.getPostcode();
 				// 把它变成[数据,数据,数据]的string，再存入
+				
 				String[] grouptemp = pttemp.getGroup();
-				String group = grouptemp.toString();
+				String group = new String();
+				group = "[";
+				for (int temp=0;temp<grouptemp.length;temp++) {
+					if (temp ==0) {
+						group = group + grouptemp[temp];
+					}
+					else {
+						group = group + ","+grouptemp[temp];
+					}
+				}
+				group = group +"]";
 				data[i][9] = group;
 				data[i][10] = pttemp.getNote();
+				
 				i++;
 			}
-
-			for (int j = 0; i < data.length; i++) {
+			for (int j = 0; j < data.length; j++) {
 				csvWriter.writeRecord(data[j]);
 			}
 			csvWriter.close();
-
+			System.out.println("导出成功");
 		} catch (Exception e) {
 			System.out.println("导出失败");
 		}
 	}
 
-	/**
-	 * csv导入
-	 */
+	 /**
+	  * csv导入
+	  */
 	public void csvread() {
 		// 导入操作
 		try {
@@ -275,25 +355,14 @@ public class AddressUtil {
 				i++;
 			}
 			System.out.println("导入成功");
-
-//				for(int j=0;j<pt.size();j++) {
-//					System.out.println(pt.get(0).getName());
-//				}
 		} catch (Exception e) {
 			System.out.println("导入失败");
 		}
-		for (PeopleTable pttemp : pt) {
-			if (gt.size() == 0) {
-
-			}
-		}
 	}
-
 	/**
 	 * vcard导入
 	 */
-	public void vCardread() {
-		// 导入
+	public void vcardread() {
 		JFileChooser fd = new JFileChooser();
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new FileFilter() {
@@ -370,15 +439,13 @@ public class AddressUtil {
 			System.out.println("vcf导入成功");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("error");
+			System.out.println("vcf导入失败");
 		}
-
 	}
-
 	/**
 	 * vcard导出
 	 */
-	public void vCardwrite() {
+	public void vcardwrite() {
 		try {
 			JFileChooser jf = new JFileChooser();
 			jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -387,8 +454,8 @@ public class AddressUtil {
 			String f = fi.getAbsolutePath() + "\\通讯录.vcf";
 			VCardWriter writer = new VCardWriter(VCardVersion.V3_0, CompatibilityMode.RFC2426);// 用户把VCard转换为字符
 			FileWriter fw = new FileWriter(new File(f));// 把VCard数据（字符）写入文件
-
-			String[] str = new String[pt.size() + 1];
+			
+			String[] str = new String[pt.size()+1];
 			int i = 0;
 			for (PeopleTable pttemp : pt) {
 				VCardImpl vc = new VCardImpl();// 创建一个名片
@@ -462,18 +529,17 @@ public class AddressUtil {
 				i++;
 			}
 			String vcString = new String();
-			for (int j = 0; j < str.length - 1; j++) {
+			for (int j = 0; j < str.length-1; j++) {
 				vcString = vcString + str[j];
 			}
 			fw.append(vcString);// 写入文件
 			fw.flush();
 			fw.close();
-			System.out.println("导出成功");
+			System.out.println("vcf导出成功");
 		} catch (Exception e) {
-			System.out.println("导出失败");
+			System.out.println("vcf导出失败");
 		}
 	}
-
 	/**
 	 * 校验某个字符是否是a-z、A-Z
 	 *
@@ -519,39 +585,45 @@ public class AddressUtil {
 	}
 
 	/**
-	 * 模糊查找 姓名、电话、手机、
-	 * 
-	 * @param text 文本框内容
-	 * @return ptshow 返回一个PeopleTable的list
-	 * 
-	 */
-	public List<PeopleTable> fuzzysearch(String text) {
-		List<PeopleTable> ptshow = new ArrayList<PeopleTable>();
+     * 模糊查找
+     * 姓名、电话、手机、
+     * @param text
+     * @return ptshow 
+     * 返回一个PeopleTable的list
+     * 
+     */
+    public List<PeopleTable> fuzzysearch(String text) {
+    	List<PeopleTable> ptshow = new ArrayList<PeopleTable>();
 		if (isContainChinese(text)) {
-			// 有中文
+			//有中文
+			String quanpin = PinYin.getPinYin(text);//输入的字拼音全拼
 			for (PeopleTable pttemp : pt) {
-				if (pttemp.getName().indexOf(text) != -1) {
+				String name = pttemp.getName();//名字
+				String pinyinname = PinYin.getPinYin(name);//拼音名字
+				if(name.indexOf(quanpin)!=-1) {
+					//名字里有这个字
 					ptshow.add(pttemp);
 				}
 			}
 		}
-		// 全为数字，直接查电话就好了
-		else if (isNumber(text)) {
-			for (PeopleTable pttemp : pt) {
-				if (pttemp.getPhone().indexOf(text) != -1 || pttemp.getTelephone().indexOf(text) != -1) {
-					// 有这个数字在手机(电话)中
+		//全为数字，直接查电话就好了
+		else if(isNumber(text)) {
+            for (PeopleTable pttemp : pt) {
+				if (pttemp.getPhone().indexOf(text)!=-1||
+						pttemp.getTelephone().indexOf(text)!=-1) {
+					//有这个数字在手机(电话)中
 					ptshow.add(pttemp);
 				}
 			}
 		}
-		// 全为字母
+		//全为字母
 		else if (isWord(text)) {
 			for (PeopleTable pttemp : pt) {
-				String name = pttemp.getName();// 名字
-				String pinyinname = PinYin.getPinYin(name);// 拼音名字
-				String capitalname = PinYin.getPinYinHeadCharLower(name);// 名字首字母
-				if (pinyinname.indexOf(text) != -1 || capitalname.indexOf(text) != -1) {
-					// 名字里有这个字
+				String name = pttemp.getName();//名字
+				String pinyinname = PinYin.getPinYin(name);//拼音名字
+				String capitalname = PinYin.getPinYinHeadCharLower(name);//名字首字母
+				if(pinyinname.indexOf(text)!=-1||capitalname.indexOf(text)!=-1) {
+					//名字里有这个字
 					ptshow.add(pttemp);
 				}
 			}
