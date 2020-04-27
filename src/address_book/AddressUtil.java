@@ -66,7 +66,6 @@ public class AddressUtil {
 		int length = pt.size();
 		for (int i = length - 1; i >= 0; i--) {
 			PeopleTable tem = pt.get(i);
-
 			if (e.equals(tem)) {
 				pt.remove(tem);
 				return true;
@@ -78,11 +77,17 @@ public class AddressUtil {
 	/**
 	 * 修改联系人
 	 * 
-	 * @param index
 	 * @param e
 	 * @return
 	 */
-	public boolean changeContactPerson(int index, PeopleTable e) {
+	public boolean changeContactPerson(PeopleTable e) {
+		int index=0;
+		for (PeopleTable pttemp : pt) {
+			if(pttemp.equals(e)) {
+				break;
+			}
+			index++;
+		}
 		if (index <= pt.size() && index >= 0) {
 			pt.set(index, e);
 			return true;
@@ -90,7 +95,26 @@ public class AddressUtil {
 			return false;
 		}
 	}
-
+	/**
+	 * 显示联系人
+	 * @param name
+	 * @return
+	 * 返回的是含有这堆名字的联系人（与showGroup联用，实现功能4）
+	 */
+	public List<PeopleTable> showContactPerson(List<String>name) {
+		List<PeopleTable> ptshow = new ArrayList<PeopleTable>();
+		for (PeopleTable pttemp : pt) {
+			//如果有这个名字
+			if (name.contains(pttemp.getName())) {
+				ptshow.add(pttemp);
+			}
+		}
+		if(ptshow.size()==0) {
+			return null;
+		}else {
+			return ptshow;
+		}
+	}
 	/**
 	 * 增加联系组
 	 * 
@@ -140,7 +164,18 @@ public class AddressUtil {
 		}
 		return false;
 	}
-	
+	/**
+	 * 查询联系组
+	 * @return 
+	 */
+	public List<String> showGroup(String groupname) {
+		for (GroupTable gttemp : gt) {
+			if (gttemp.getGroup().equals(groupname)) {
+				return gttemp.getName();
+			}
+		}
+		return null;
+	}
 	/**
 	 * txt导出操作
 	 */
@@ -193,12 +228,10 @@ public class AddressUtil {
 		JFileChooser fd = new JFileChooser();
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new FileFilter() {
-
 			@Override
 			public String getDescription() {
 				return ".txt";
 			}
-
 			@Override
 			public boolean accept(File f) {
 				if (f.getName().endsWith(".txt") || f.isDirectory()) {
@@ -796,7 +829,7 @@ public class AddressUtil {
 	public static void main(String[] args) {
 		AddressUtil ad = new AddressUtil();
 		ad.csvread();
-		ad.csvwrite();
-//		ad.showgroup();
+//		ad.csvwrite();
+		ad.showgroup();
 	}
 }
